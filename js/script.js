@@ -6,6 +6,7 @@ const easyBtn = document.getElementById("btnEasy");
 const mediumBtn = document.getElementById("btnMedium");
 const hardBtn = document.getElementById("btnHard");
 
+
 let difficultyNum = '';
 
 let points = 0;
@@ -150,6 +151,9 @@ function squareClick(x, y) {
                     }
                     loseAlert.style.display = 'block';
                     loseAlert.innerHTML = `Hai perso! Il tuo punteggio è ${points}`
+                    const bombSound = document.getElementById('bomb-sound');
+                    bombSound.play();
+          
                 }
             );
         } else {
