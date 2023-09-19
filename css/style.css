@@ -104,18 +104,19 @@ header > div {
 }
 
 .bomb {
-  background-color: red;
-  border: 5px solid red;
+  background-color: brown;
+  border: 5px solid #2a9d8f;
   font-weight: bold;
   cursor: not-allowed;
 }
 
 .alert {
   position: absolute;
-  top: 10%;
-  left: 30%;
-  padding: 40px;
+  top: 7%;
+  left: 29%;
+  padding: 70px;
   background-color: red;
+  border: 1px solid yellow;
   color: black;
   border-radius: 20px;
   font-size: 3rem;
