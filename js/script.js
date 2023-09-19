@@ -9,6 +9,7 @@ const hardBtn = document.getElementById("btnHard");
 
 let difficultyNum = '';
 
+let gameInProgress = true;
 let points = 0;
 
 // selezionare gli alert per vittoria e sconfitta
@@ -17,47 +18,29 @@ const winAlert = document.getElementById('win');
 
 easyBtn.addEventListener('click', 
     function() {
-        difficultyNum = 100;
-        points = 0;
-        loseAlert.style.display = 'none';
-        winAlert.style.display = 'none';
-
-        gridContainer.innerHTML = "";
-
-        gridDifficulty(difficultyNum, "squareEasy")
-
-        squareClick('[class^="square"]', 'bombPlace')
+      resetGame();
+      difficultyNum = 100;
+      gridDifficulty(difficultyNum, "squareEasy")
+      squareClick('[class^="square"]', 'bombPlace')
     }
 );
 
 mediumBtn.addEventListener('click', 
     function() {
-        difficultyNum = 81;
-        points = 0;
-        loseAlert.style.display = 'none';
-        winAlert.style.display = 'none';
-
-        gridContainer.innerHTML = "";
-
-        gridDifficulty(difficultyNum, "squareMedium") 
-
-        squareClick('[class^="square"]', 'bombPlace')
+      resetGame();
+      difficultyNum = 81;
+      gridDifficulty(difficultyNum, "squareMedium") 
+      squareClick('[class^="square"]', 'bombPlace')
     }
     
 );
 
 hardBtn.addEventListener('click', 
     function() {
-        difficultyNum = 49;
-        points = 0;
-        loseAlert.style.display = 'none';
-        winAlert.style.display = 'none';
-
-        gridContainer.innerHTML = "";
-
-        gridDifficulty(difficultyNum, "squareHard")
-
-        squareClick('[class^="square"]', 'bombPlace')
+      resetGame();
+      difficultyNum = 49;
+      gridDifficulty(difficultyNum, "squareHard");
+      squareClick('[class^="square"]', 'bombPlace');
     }
 );
 
@@ -109,58 +92,66 @@ function gridDifficulty(x, y) {
 
 // click sul singolo quadratino
 function squareClick(x, y) {
-    let squareSelector = document.querySelectorAll(x);
-    let bombSelector = [];
-    console.log(squareSelector);
+  let squareSelector = document.querySelectorAll(x);
+  let bombSelector = [];
+  console.log(squareSelector);
 
-    
-    
+  for (let i = 0; i < squareSelector.length; i++) {
+      if (squareSelector[i].classList.contains(y)) {
+          bombSelector.push(squareSelector[i]);
+      }
+  }
   
-    for (let i = 0; i < squareSelector.length; i++) {
-        if (squareSelector[i].classList.contains(y)) {
-            bombSelector.push(squareSelector[i]);
-        }
-    }
-    
-    console.log(bombSelector);
+  console.log(bombSelector);
 
+  for (let i = 0; i < squareSelector.length; i++) {
+      function activeClick() {
+          if (gameInProgress) {
+              squareSelector[i].classList.add('active');
+              points++;
 
-    for (let i = 0; i < squareSelector.length; i++) {
+              if (points == difficultyNum - 16) {
+                  winAlert.style.display = 'block';
+                  winAlert.innerHTML = `Hai vinto! Hai evitato tutte le bombe ottenendo ${points} punti.`
+              }
 
-       
-        function activeClick() {
-            squareSelector[i].classList.add('active');
-            points++
+              console.log(points);
+              squareSelector[i].removeEventListener('click', activeClick);
+          }
+      }
 
-            if (points == difficultyNum - 16) {
-                winAlert.style.display = 'block';
-                winAlert.innerHTML = `Hai vinto! Hai evitato tutte le bombe ottenendo ${points} punti.`
-            }
-            
-            console.log(points);
-            squareSelector[i].removeEventListener('click', activeClick);
-        
-        }
-
-        if (squareSelector[i].classList.contains(y)) {
-            
-            squareSelector[i].addEventListener('click',
-                function() {
-                    for (let i = 0; i < bombSelector.length; i++) {
-                        bombSelector[i].classList.add('bomb');
-                    }
-                    loseAlert.style.display = 'block';
-                    loseAlert.innerHTML = `Hai perso! Il tuo punteggio è ${points}`
-                    const bombSound = document.getElementById('bomb-sound');
-                    bombSound.play();
-          
-                }
-            );
-        } else {
-         
-            squareSelector[i].addEventListener('click', activeClick);
-        }
-    }
-
+      if (squareSelector[i].classList.contains(y)) {
+          squareSelector[i].addEventListener('click', function() {
+              if (gameInProgress) {
+                  for (let i = 0; i < bombSelector.length; i++) {
+                      bombSelector[i].classList.add('bomb');
+                  }
+                  gameInProgress = false; // Imposta lo stato del gioco su "false" quando l'utente perde.
+                  loseAlert.style.display = 'block';
+                  loseAlert.innerHTML = `Hai perso! Il tuo punteggio è ${points}`;
+                  const bombSound = document.getElementById('bomb-sound');
+                  bombSound.play();
+                  
+                  // Disabilita tutte le celle rimanenti
+                  squareSelector.forEach((cell) => {
+                      cell.removeEventListener('click', activeClick);
+                      cell.style.cursor = 'not-allowed';
+                  });
+              }
+          });
+      } else {
+          squareSelector[i].addEventListener('click', activeClick);
+      }
+  }
 }
+
+function resetGame() {
+  gameInProgress = true;
+  points = 0;
+  loseAlert.style.display = 'none';
+  winAlert.style.display = 'none';
+  gridContainer.innerHTML = "";
+}
+
+
 
