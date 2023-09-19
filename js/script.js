@@ -1,21 +1,27 @@
-
+// seleziono il contenitore del gioco 
 const gridContainer = document.getElementById('container');
 
-// seleziona i bottoni perdifficoltà
+// seleziono i bottoni perdifficoltà
 const easyBtn = document.getElementById("btnEasy");
 const mediumBtn = document.getElementById("btnMedium");
 const hardBtn = document.getElementById("btnHard");
+const overGameBg = document.querySelector('.over-game-bg');
 
 
 let difficultyNum = '';
-
-let gameInProgress = true;
 let points = 0;
 
-// selezionare gli alert per vittoria e sconfitta
+// creo una variabile booleana per poter congelare il gioco quando si perde 
+let gameInProgress = true;
+
+
+
+
+// seleziono gli alert per vittoria e sconfitta
 const loseAlert = document.getElementById('lose');
 const winAlert = document.getElementById('win');
 
+// aggiungo funzioni a ciascun pulsante 
 easyBtn.addEventListener('click', 
     function() {
       resetGame();
@@ -46,23 +52,27 @@ hardBtn.addEventListener('click',
 
 
 
-// FUNZIONI -----
 
-// genera il quadrato
+
+
+// FUNZIONI -------------
+
+
+// genero il quadrato
 function squareGenerator(x, y) {
-    let gridSquare = document.createElement(x);
-    gridSquare.classList.add(y);
-    return gridSquare
+  let gridSquare = document.createElement(x);
+  gridSquare.classList.add(y);
+  return gridSquare
 }
 
-// genera la griglia di quadrati a seconda della difficoltà
+// genero la griglia di quadrati a seconda della difficoltà
 function gridDifficulty(x, y) {
     for (let i = 0; i < x; i++) {
-        let newElem = squareGenerator("div", y);
-        gridContainer.appendChild(newElem);
+      let newElem = squareGenerator("div", y);
+      gridContainer.appendChild(newElem);
     }
 
-    // genera i quadrati con il numero all'interno
+    // genero i quadrati con il numero all'interno
     let squareSelector = document.querySelectorAll('[class^="square"]');
     let squareArr = [];
     for (let i = 0; i < squareSelector.length; i++) {
@@ -71,7 +81,7 @@ function gridDifficulty(x, y) {
     }
     console.log(squareSelector);
 
-    // genera l'array per le bombe
+    // genero l'array per le bombe
     let bombArray = [];
     while (bombArray.length < 16) {
         let bombNum = Math.floor(Math.random() * difficultyNum) + 1;
@@ -94,15 +104,14 @@ function gridDifficulty(x, y) {
 function squareClick(x, y) {
   let squareSelector = document.querySelectorAll(x);
   let bombSelector = [];
-  console.log(squareSelector);
-
+ 
   for (let i = 0; i < squareSelector.length; i++) {
       if (squareSelector[i].classList.contains(y)) {
           bombSelector.push(squareSelector[i]);
       }
   }
   
-  console.log(bombSelector);
+  
 
   for (let i = 0; i < squareSelector.length; i++) {
       function activeClick() {
@@ -115,7 +124,7 @@ function squareClick(x, y) {
                   winAlert.innerHTML = `Hai vinto! Hai evitato tutte le bombe ottenendo ${points} punti.`
               }
 
-              console.log(points);
+             
               squareSelector[i].removeEventListener('click', activeClick);
           }
       }
@@ -126,13 +135,15 @@ function squareClick(x, y) {
                   for (let i = 0; i < bombSelector.length; i++) {
                       bombSelector[i].classList.add('bomb');
                   }
-                  gameInProgress = false; // Imposta lo stato del gioco su "false" quando l'utente perde.
+                  gameInProgress = false; // Imposto lo stato del gioco su "false" quando l'utente perde.
                   loseAlert.style.display = 'block';
+                  overGameBg.style.display = 'block';
+                 
                   loseAlert.innerHTML = `Hai perso! Il tuo punteggio è ${points}`;
                   const bombSound = document.getElementById('bomb-sound');
                   bombSound.play();
                   
-                  // Disabilita tutte le celle rimanenti
+                  // Disabilito tutte le celle rimanenti
                   squareSelector.forEach((cell) => {
                       cell.removeEventListener('click', activeClick);
                       cell.style.cursor = 'not-allowed';
@@ -151,6 +162,8 @@ function resetGame() {
   loseAlert.style.display = 'none';
   winAlert.style.display = 'none';
   gridContainer.innerHTML = "";
+  overGameBg.style.display = 'none';
+
 }
 
 
